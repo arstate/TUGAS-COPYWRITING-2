@@ -1,0 +1,61 @@
+<main class="flex items-center justify-center h-screen bg-black overflow-hidden">
+  <div class="relative w-[90%] max-h-[90%] aspect-[16/9] shadow-2xl shadow-orange-500/10">
+
+    <!-- Background decorative flow elements -->
+    <div class="absolute top-0 -left-16 w-96 h-96 bg-orange-500/40 rounded-full mix-blend-hard-light filter blur-3xl opacity-60 animate-flow"></div>
+    <div class="absolute top-0 -right-16 w-[28rem] h-[28rem] bg-red-500/40 rounded-full mix-blend-hard-light filter blur-3xl opacity-60 animate-flow animation-delay-3000"></div>
+    <div class="absolute -bottom-16 left-1/3 w-96 h-96 bg-amber-400/30 rounded-full mix-blend-hard-light filter blur-3xl opacity-60 animate-flow animation-delay-5000"></div>
+    
+    <!-- Grain/Noise Overlay -->
+    <div class="absolute inset-0 w-full h-full bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWYmJicnJyZmZmaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhqcGhoaGhoaGhrwD3dAAAAFVJREFUeNpiZGBgEGBgYmBgYGBgYGBgYGRhYFiYAAAA+gAUNAE2AAAAAElFTkSuQmCC')] opacity-5 mix-blend-overlay pointer-events-none"></div>
+
+    <!-- Presentation Container -->
+    <div class="relative w-full h-full bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col">
+      <div class="flex-grow p-6 md:p-12 flex items-center justify-center overflow-y-auto min-h-0">
+        <app-slide [slide]="currentSlide()"></app-slide>
+      </div>
+
+      <!-- Footer -->
+      <footer class="relative flex-shrink-0 p-4 text-center bg-black/20 border-t border-white/10">
+        <p class="text-sm text-gray-400/80">BACHTIAR ARYANSYAH PUTRA (24091367032)</p>
+        
+        <!-- Slide Counter -->
+        <div class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-base font-mono px-4 py-2 bg-black/40 text-orange-400 rounded-lg">
+            {{ currentSlideIndex() + 1 }} / {{ totalSlides() }}
+        </div>
+      </footer>
+    </div>
+
+    <!-- Navigation Buttons -->
+    @if (!isFirstSlide()) {
+      <button 
+        (click)="previousSlide()" 
+        class="absolute top-1/2 left-4 md:left-6 -translate-y-1/2 z-30 p-3 bg-black/40 hover:bg-orange-500/80 border border-white/10 rounded-full backdrop-blur-sm transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-400 md:p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+      </button>
+    }
+
+    @if (!isLastSlide()) {
+      <button 
+        (click)="nextSlide()" 
+        class="absolute top-1/2 right-4 md:right-6 -translate-y-1/2 z-30 p-3 bg-black/40 hover:bg-orange-500/80 border border-white/10 rounded-full backdrop-blur-sm transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-400 md:p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+      </button>
+    }
+
+  </div>
+</main>
+<style>
+  @keyframes flow {
+    0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+    25% { transform: translate(30px, -50px) scale(1.1) rotate(15deg); }
+    50% { transform: translate(-20px, 20px) scale(0.9) rotate(-15deg); }
+    75% { transform: translate(10px, 40px) scale(1.05) rotate(10deg); }
+    100% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+  }
+  .animate-flow {
+    animation: flow 20s infinite ease-in-out;
+  }
+  .animation-delay-3000 { animation-delay: -3s; }
+  .animation-delay-5000 { animation-delay: -5s; }
+</style>
