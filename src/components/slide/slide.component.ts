@@ -10,6 +10,7 @@ import { Slide } from '../../slide.interface';
 })
 export class SlideComponent {
   slide = input.required<Slide>();
+  isPdfMode = input<boolean>(false);
   
   isArray(content: any): content is string[] {
     return Array.isArray(content);

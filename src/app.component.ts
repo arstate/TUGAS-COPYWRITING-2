@@ -118,32 +118,36 @@ export class AppComponent {
     this.isGeneratingPdf.set(true);
     const originalIndex = this.currentSlideIndex();
 
+    // Allow UI to update to "generating" state
+    await new Promise(resolve => setTimeout(resolve, 50));
+
     try {
       const { jsPDF } = jspdf;
       // PDF page with 16:9 aspect ratio
       const pdf = new jsPDF('landscape', 'px', [1280, 720]);
+      const elementToCapture = document.getElementById('presentation-wrapper');
 
-      for (const [index, slide] of this.slides().entries()) {
+      if (!elementToCapture) {
+        throw new Error('Presentation container not found. PDF generation failed.');
+      }
+
+      for (const [index] of this.slides().entries()) {
         this.currentSlideIndex.set(index);
 
-        // Use a dynamic delay to wait for animations, especially on the mindmap slide.
-        const delay = slide.type === 'mindmap' ? 1500 : 200;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        // Wait for DOM update and next browser paint to ensure slide is fully rendered
+        await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
 
-        const slideElement = document.querySelector('app-slide');
-        if (slideElement) {
-          const canvas = await html2canvas(slideElement as HTMLElement, {
-            scale: 2, // Higher scale for better quality
-            backgroundColor: null, // Use transparent background
-            useCORS: true,
-          });
-          const imgData = canvas.toDataURL('image/png');
+        const canvas = await html2canvas(elementToCapture, {
+          scale: 2, // Higher scale for better quality
+          useCORS: true,
+          backgroundColor: '#000000', // Use a solid background to avoid issues with transparency
+        });
+        const imgData = canvas.toDataURL('image/png');
 
-          if (index > 0) {
-            pdf.addPage([1280, 720], 'landscape');
-          }
-          pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+        if (index > 0) {
+          pdf.addPage([1280, 720], 'landscape');
         }
+        pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
       }
 
       pdf.save('copywriting-presentation.pdf');
