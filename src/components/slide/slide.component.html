@@ -79,27 +79,25 @@
       </div>
     }
     @case ('mindmap') {
-      <div class="w-full h-full flex flex-col items-center justify-start">
-        <h2 class="flex-shrink-0 text-2xl font-semibold text-orange-400 mb-8">{{ slide().title }}</h2>
+      <div class="relative w-full h-full flex items-center justify-center">
+        <h2 class="absolute top-0 left-1/2 -translate-x-1/2 z-20 text-2xl font-semibold text-orange-400">{{ slide().title }}</h2>
         @if(slide().mindmap; as mindmap) {
-          <div class="relative flex-grow flex items-center justify-center w-full">
-            <div class="relative w-0 h-0 flex items-center justify-center transition-transform duration-500 scale-[0.6] sm:scale-[0.7] md:scale-[0.85] lg:scale-100">
-              <div class="absolute w-[30rem] h-[30rem] border-2 border-dashed border-orange-500/30 rounded-full animate-spin-slow"></div>
-              <div class="absolute w-[38rem] h-[38rem] border-2 border-dashed border-red-500/20 rounded-full animate-spin-slow-reverse"></div>
-              
-              <div class="z-10 bg-orange-500/20 backdrop-blur-md border border-orange-400/60 text-white font-bold text-xl p-4 rounded-[50%] w-64 aspect-square flex items-center justify-center text-center shadow-lg shadow-orange-500/30">
-                {{ mindmap.center }}
-              </div>
-              
-              @for(branch of mindmap.branches; track branch; let i = $index) {
-                <div class="absolute z-10 p-4 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-lg border border-white/10 w-60 text-left animate-branch-in branch-item"
-                     [style]="getBranchStyle(i)"
-                     [style.animation-delay]="getBranchAnimationDelay(i)['animation-delay']">
-                  <h3 class="font-bold text-orange-400 text-base mb-1">{{ branch.title }}</h3>
-                  <p class="text-sm text-gray-300">{{ branch.text }}</p>
-                </div>
-              }
+          <div class="relative w-0 h-0 flex items-center justify-center transition-transform duration-500 scale-[0.6] sm:scale-[0.7] md:scale-[0.85] lg:scale-100">
+            <div class="absolute w-[30rem] h-[30rem] border-2 border-dashed border-orange-500/30 rounded-full animate-spin-slow"></div>
+            <div class="absolute w-[38rem] h-[38rem] border-2 border-dashed border-red-500/20 rounded-full animate-spin-slow-reverse"></div>
+            
+            <div class="z-10 bg-orange-500/20 backdrop-blur-md border border-orange-400/60 text-white font-bold text-xl p-4 rounded-[50%] w-64 aspect-square flex items-center justify-center text-center shadow-lg shadow-orange-500/30">
+              {{ mindmap.center }}
             </div>
+            
+            @for(branch of mindmap.branches; track branch; let i = $index) {
+              <div class="absolute z-10 p-4 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-lg border border-white/10 w-60 text-left animate-branch-in branch-item"
+                    [style]="getBranchStyle(i)"
+                    [style.animation-delay]="getBranchAnimationDelay(i)['animation-delay']">
+                <h3 class="font-bold text-orange-400 text-base mb-1">{{ branch.title }}</h3>
+                <p class="text-sm text-gray-300">{{ branch.text }}</p>
+              </div>
+            }
           </div>
         }
       </div>
