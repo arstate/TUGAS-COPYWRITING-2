@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { SlideComponent } from './components/slide/slide.component';
 import { Slide, MindmapNode } from './slide.interface';
 
+declare var html2canvas: any;
+declare var jspdf: any;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -96,6 +99,7 @@ export class AppComponent {
   ]);
 
   currentSlideIndex = signal(0);
+  isGeneratingPdf = signal(false);
   
   readonly totalSlides = computed(() => this.slides().length);
   readonly currentSlide = computed(() => this.slides()[this.currentSlideIndex()]);
@@ -108,5 +112,38 @@ export class AppComponent {
 
   previousSlide(): void {
     this.currentSlideIndex.update(index => Math.max(index - 1, 0));
+  }
+
+  async downloadPdf(): Promise<void> {
+    this.isGeneratingPdf.set(true);
+    const originalIndex = this.currentSlideIndex();
+    const { jsPDF } = jspdf;
+    // PDF page with 16:9 aspect ratio
+    const pdf = new jsPDF('landscape', 'px', [1280, 720]);
+
+    for (const [index] of this.slides().entries()) {
+      this.currentSlideIndex.set(index);
+      // Wait for Angular to render the slide
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const slideElement = document.querySelector('app-slide');
+      if (slideElement) {
+        const canvas = await html2canvas(slideElement as HTMLElement, {
+          scale: 2, // Higher scale for better quality
+          backgroundColor: null, // Use transparent background
+        });
+        const imgData = canvas.toDataURL('image/png');
+        
+        if (index > 0) {
+          pdf.addPage();
+        }
+        pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+      }
+    }
+
+    pdf.save('copywriting-presentation.pdf');
+    // Restore original state
+    this.currentSlideIndex.set(originalIndex);
+    this.isGeneratingPdf.set(false);
   }
 }
