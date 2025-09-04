@@ -1,4 +1,7 @@
-<div class="relative w-full h-full flex flex-col items-center justify-center text-center text-white animate-fade-in">
+<div 
+  class="relative w-full h-full flex flex-col items-center text-center text-white animate-fade-in"
+  [class.justify-center]="slide().type !== 'mindmap'"
+  [class.justify-start]="slide().type === 'mindmap'">
   @switch (slide().type) {
     @case ('title') {
       <h1 class="py-4 text-6xl md:text-7xl lg:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-lg animate-font-change">
