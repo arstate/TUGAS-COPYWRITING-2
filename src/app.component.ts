@@ -1,4 +1,3 @@
-
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SlideComponent } from './components/slide/slide.component';
@@ -88,7 +87,6 @@ export class AppComponent {
     },
     {
       type: 'mindmap',
-      title: 'Jawaban 4: Keahlian Seorang Copywriter',
       mindmap: this.mindmapData
     },
     {
