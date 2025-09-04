@@ -117,33 +117,42 @@ export class AppComponent {
   async downloadPdf(): Promise<void> {
     this.isGeneratingPdf.set(true);
     const originalIndex = this.currentSlideIndex();
-    const { jsPDF } = jspdf;
-    // PDF page with 16:9 aspect ratio
-    const pdf = new jsPDF('landscape', 'px', [1280, 720]);
 
-    for (const [index] of this.slides().entries()) {
-      this.currentSlideIndex.set(index);
-      // Wait for Angular to render the slide
-      await new Promise(resolve => setTimeout(resolve, 100));
+    try {
+      const { jsPDF } = jspdf;
+      // PDF page with 16:9 aspect ratio
+      const pdf = new jsPDF('landscape', 'px', [1280, 720]);
 
-      const slideElement = document.querySelector('app-slide');
-      if (slideElement) {
-        const canvas = await html2canvas(slideElement as HTMLElement, {
-          scale: 2, // Higher scale for better quality
-          backgroundColor: null, // Use transparent background
-        });
-        const imgData = canvas.toDataURL('image/png');
-        
-        if (index > 0) {
-          pdf.addPage();
+      for (const [index, slide] of this.slides().entries()) {
+        this.currentSlideIndex.set(index);
+
+        // Use a dynamic delay to wait for animations, especially on the mindmap slide.
+        const delay = slide.type === 'mindmap' ? 1500 : 200;
+        await new Promise(resolve => setTimeout(resolve, delay));
+
+        const slideElement = document.querySelector('app-slide');
+        if (slideElement) {
+          const canvas = await html2canvas(slideElement as HTMLElement, {
+            scale: 2, // Higher scale for better quality
+            backgroundColor: null, // Use transparent background
+            useCORS: true,
+          });
+          const imgData = canvas.toDataURL('image/png');
+
+          if (index > 0) {
+            pdf.addPage([1280, 720], 'landscape');
+          }
+          pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
         }
-        pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
       }
-    }
 
-    pdf.save('copywriting-presentation.pdf');
-    // Restore original state
-    this.currentSlideIndex.set(originalIndex);
-    this.isGeneratingPdf.set(false);
+      pdf.save('copywriting-presentation.pdf');
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+    } finally {
+      // Restore original state
+      this.currentSlideIndex.set(originalIndex);
+      this.isGeneratingPdf.set(false);
+    }
   }
 }
